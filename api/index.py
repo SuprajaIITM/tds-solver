@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from mangum import Mangum
 
 app = FastAPI()
 
@@ -9,4 +9,6 @@ def read_root():
 
 @app.get("/greet")
 def greet(name: str = "World"):
-    return JSONResponse(content={"greeting": f"Hello, {name}!"})
+    return {"greeting": f"Hello, {name}!"}
+
+handler = Mangum(app)
