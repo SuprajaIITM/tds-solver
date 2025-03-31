@@ -3,3 +3,4 @@ aiofiles
 pandas
 python-multipart
 openpyxl
+openai==0.28
