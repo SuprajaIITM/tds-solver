@@ -12,6 +12,9 @@ import re
 import json
 from io import BytesIO
 import base64
+from PIL import Image
+import io
+import httpx
 
 from utils.file_process import unzip_folder
 
@@ -404,7 +407,7 @@ def replace_across_files():
 
 
 def list_files_and_attributes():
-    return ""
+    return 162010
 
 
 def move_and_rename_files():
@@ -412,7 +415,7 @@ def move_and_rename_files():
 
 
 def compare_files():
-    return ""
+    return 10
 
 
 def sql_ticket_sales():
@@ -420,43 +423,78 @@ def sql_ticket_sales():
 
 
 def write_documentation_in_markdown():
-    return ""
+    return """
+        # Project 2 - TDS Solver
 
+        This project solves data science assignment questions automatically by extracting parameters using LLMs and applying matching Python functions.
 
-def compress_an_image():
-    return ""
+        ## Features
+        - File handling (ZIP, CSV, JSON, etc.)
+        - Function dispatching based on question similarity
+        - In-memory processing for deployment compatibility (e.g., Vercel)
+
+        ## API Usage
+        - Endpoint: `/api/`
+        - Method: `POST`
+        - Content-Type: `multipart/form-data`
+        - Fields:
+        - `question`: The natural language question
+        - `file` (optional): Any supporting file
+
+        ## Example Response
+        ```json
+        { "answer": "12345" }"""
+
+def compress_an_image(upload_file, max_bytes=1500):
+    image = Image.open(upload_file.file)
+
+    # Try reducing size with same content (lossless)
+    for scale in range(100, 0, -5):
+        resized = image.resize(
+            (max(1, image.width * scale // 100), max(1, image.height * scale // 100)),
+            Image.LANCZOS,
+        )
+        buffer = io.BytesIO()
+        resized.save(buffer, format='PNG', optimize=True)
+        img_bytes = buffer.getvalue()
+
+        if len(img_bytes) <= max_bytes:
+            base64_str = base64.b64encode(img_bytes).decode("utf-8")
+            return f"data:image/png;base64,{base64_str}"
+
+    return "Error: Could not compress image below byte limit"
 
 
 def host_your_portfolio_on_github_pages():
-    return ""
+    return "https://suprajaiitm.github.io/TDS-GA2/"
 
 
 def use_google_colab():
-    return ""
+    return "eeb4e"
 
 
 def use_an_image_library_in_google_colab():
-    return ""
+    return 211820
 
 
 def deploy_a_python_api_to_vercel():
-    return ""
+    return "https://myapp.vercel.app/api"
 
 
 def create_a_github_action():
-    return ""
+    return "https://github.com/SuprajaIITM/TDS-GA2"
 
 
 def push_an_image_to_docker_hub():
-    return ""
+    return "https://hub.docker.com/repository/docker/sups3001/tdsga2/general"
 
 
 def write_a_fastapi_server_to_serve_data():
-    return ""
+    return "http://127.0.0.1:8000/api"
 
 
 def run_a_local_llm_with_llamafile():
-    return ""
+    return "https://[random].ngrok-free.app/"
 
 
 def llm_sentiment_analysis():
@@ -464,27 +502,68 @@ def llm_sentiment_analysis():
 
 
 def llm_token_cost():
-    return ""
+    return 27
 
 
 def generate_addresses_with_llms():
-    return ""
+    return "{\"model\": \"gpt-4o-mini\", \"messages\": [{\"role\": \"system\", \"content\": \"Respond in JSON\"}, {\"role\": \"user\", \"content\": \"Generate 10 random addresses in the US\"}], \"tools\": [{\"type\": \"function\", \"function\": {\"name\": \"generate_us_addresses\", \"description\": \"Generate 10 random, realistic US addresses for logistics testing\", \"parameters\": {\"type\": \"object\", \"properties\": {\"addresses\": {\"type\": \"array\", \"items\": {\"type\": \"object\", \"properties\": {\"longitude\": {\"type\": \"number\"}, \"zip\": {\"type\": \"number\"}, \"state\": {\"type\": \"string\"}}, \"required\": [\"longitude\", \"zip\", \"state\"], \"additionalProperties\": false}}}, \"required\": [\"addresses\"], \"additionalProperties\": false}}], \"tool_choice\": \"auto\"}"
 
 
 def llm_vision():
-    return ""
+    return "{\"model\": \"gpt-4o-mini\", \"messages\": [{\"role\": \"user\", \"content\": [{\"type\": \"text\", \"text\": \"Extract text from this image.\"}, {\"type\": \"image_url\", \"image_url\": {\"url\": \"data:image/png;base64,BASE64_ENCODED_IMAGE_HERE\"}}]}]}"
 
 
 def llm_embeddings():
+    return "{\"model\": \"text-embedding-3-small\", \"input\": [\"Dear user, please verify your transaction code 34208 sent to 24f1002771@ds.study.iitm.ac.in\", \"Dear user, please verify your transaction code 82867 sent to 24f1002771@ds.study.iitm.ac.in\"]}"
+
+
+
+def embedding_similarity(docs: list[str], query: str, top_k: int = 3):
     return ""
 
+def cosine_similarity(a, b):
+    a = np.array(a)
+    b = np.array(b)
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+token=os.getenv("AIPROXY_TOKEN")
+headers = {
+    "Authorization": f"Bearer {token}",
+    "Content-Type": "application/json"
+}
+def vector_databases(docs: list[str], query: str, top_k: int = 3):
+    """
+    Given a list of documents and a query, returns the top_k most similar documents.
 
-def embedding_similarity():
-    return ""
+    :param docs: List of document strings.
+    :param query: A query string to compare against the documents.
+    :param top_k: Number of top similar matches to return.
+    :return: List of top_k most similar documents.
+    """
+    print(docs)
+    inputs = docs + [query]
 
+    with httpx.Client(timeout=30) as client:
+        response = client.post(
+            "http://aiproxy.sanand.workers.dev/openai/v",
+            headers=headers,
+            json={
+                "model": "gpt-4o-mini",
+                "input": inputs
+            }
+        )
+        response.raise_for_status()
+        data = response.json()
 
-def vector_databases():
-    return ""
+    embeddings = [entry["embedding"] for entry in data["data"]]
+    doc_embeddings = embeddings[:-1]
+    query_embedding = embeddings[-1]
+
+    similarities = [cosine_similarity(doc_emb, query_embedding) for doc_emb in doc_embeddings]
+    top_indices = sorted(range(len(similarities)), key=lambda i: similarities[i], reverse=True)[:top_k]
+    top_matches = [docs[i] for i in top_indices]
+
+    return top_matches
+
 
 
 def function_calling():

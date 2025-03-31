@@ -62,6 +62,7 @@ async def process_file(question: str = Form(...), file: UploadFile = None):
             function_definitions_llm=function_definitions_objects_llm[matched_function],
         )
         # Handle file logic
+        print(solution_function)
         if file:
             if file.filename.endswith(".zip"):
                 if isinstance(parameters, dict):

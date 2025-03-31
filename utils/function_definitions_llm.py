@@ -260,17 +260,11 @@ function_definitions_objects_llm = {
     },
     "write_documentation_in_markdown": {
         "name": "write_documentation_in_markdown",
-        "description": "description",
+        "description": "Returns static documentation content in markdown format.",
         "parameters": {
             "type": "object",
-            "properties": {
-                "text": {
-                    "type": "string",
-                    "description": "The text to extract the data from",
-                }
-            },
-            "required": ["text"],
-        },
+            "properties": {}
+        }
     },
     "compress_an_image": {
         "name": "compress_an_image",
@@ -469,32 +463,68 @@ function_definitions_objects_llm = {
         },
     },
     "embedding_similarity": {
-        "name": "embedding_similarity",
-        "description": "description",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "text": {
-                    "type": "string",
-                    "description": "The text to extract the data from",
-                }
-            },
-            "required": ["text"],
+  "name": "embedding_similarity",
+  "description": "Computes embedding similarity between a query string and a list of documents. Returns top matches.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "docs": {
+        "type": "array",
+        "items": {
+          "type": "string"
         },
+        "description": "List of documents to compare against the query. These should be phrases, sentences, or short paragraphs."
+      },
+      "query": {
+        "type": "string",
+        "description": "The user’s query or intent, extracted from the question."
+      }
     },
+    "required": ["docs", "query"],
+    "examples": [
+      {
+        "query": "I forgot my password",
+        "docs": [
+          "How to reset password",
+          "Troubleshooting login issues",
+          "Steps to create an account"
+        ]
+      }
+    ]
+  }
+},
+
+
     "vector_databases": {
         "name": "vector_databases",
-        "description": "description",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "text": {
-                    "type": "string",
-                    "description": "The text to extract the data from",
-                }
-            },
-            "required": ["text"],
+  "description": "Computes embedding similarity between a query string and a list of documents. Returns top matches.",
+  "parameters": {
+    "type": "object",
+    "properties": {
+      "docs": {
+        "type": "array",
+        "items": {
+          "type": "string"
         },
+        "description": "List of documents to compare against the query. These should be phrases, sentences, or short paragraphs."
+      },
+      "query": {
+        "type": "string",
+        "description": "The user’s query or intent, extracted from the question."
+      }
+    },
+    "required": ["docs", "query"],
+    "examples": [
+      {
+        "query": "I forgot my password",
+        "docs": [
+          "How to reset password",
+          "Troubleshooting login issues",
+          "Steps to create an account"
+        ]
+      }
+    ]
+  }
     },
     "function_calling": {
         "name": "function_calling",
